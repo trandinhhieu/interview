@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dongvu.interview.mapper.SystemUserMapper">
+    <resultMap id="systemUserResultMap" type="com.dongvu.interview.model.SystemUser">
+        <id property="id" column="id" /> <!-- Định nghĩa trường id là khóa chính -->
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="nickname" column="nickname" />
+        <result property="remark" column="remark" />
+        <result property="deptId" column="dept_id" />
+        <result property="postIds" column="post_ids" />
+        <result property="email" column="email" />
+        <result property="mobile" column="mobile" />
+        <result property="sex" column="sex" />
+        <result property="avatar" column="avatar" />
+        <result property="status" column="status" />
+        <result property="loginIp" column="login_ip" />
+        <result property="loginDate" column="login_date" />
+        <result property="creator" column="creator" />
+        <result property="createTime" column="create_time" />
+        <result property="updater" column="updater" />
+        <result property="updateTime" column="update_time" />
+        <result property="deleted" column="deleted" />
+        <result property="tenantId" column="tenant_id" />
+    </resultMap>
+    <!-- Create -->
+    <insert id="insert" parameterType="com.dongvu.interview.model.SystemUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO system_users su (su.username, su.password, su.nickname, su.remark, su.dept_id, su.post_ids, su.email, su.mobile, su.sex, su.avatar, su.status, su.login_ip, su.login_date, su.creator, su.create_time, su.updater, su.update_time, su.deleted, su.tenant_id)
+        VALUES (#{username}, #{password}, #{nickname}, #{remark}, #{deptId}, #{postIds}, #{email}, #{mobile}, #{sex}, #{avatar}, #{status}, #{loginIp}, #{loginDate}, #{creator}, #{createTime}, #{updater}, #{updateTime}, #{deleted}, #{tenantId})
+    </insert>
+
+    <!-- Read -->
+    <select id="findById" parameterType="long" resultMap="systemUserResultMap">
+        SELECT * FROM system_users su WHERE su.id = #{id} AND su.deleted = 0 LIMIT 1
+    </select>
+
+    <select id="findAll" resultMap="systemUserResultMap">
+        SELECT * FROM system_users su WHERE su.deleted = 0
+    </select>
+
+    <!-- Update -->
+    <update id="update" parameterType="com.dongvu.interview.model.SystemUser">
+        UPDATE system_users su
+        SET su.username = #{username}, su.password = #{password}, su.nickname = #{nickname}, su.remark = #{remark}, su.dept_id = #{deptId}, su.post_ids = #{postIds},
+        su.email = #{email}, su.mobile = #{mobile}, su.sex = #{sex}, su.avatar = #{avatar}, su.status = #{status}, su.login_ip = #{loginIp}, su.login_date = #{loginDate},
+        su.creator = #{creator}, su.create_time = #{createTime}, su.updater = #{updater}, su.update_time = #{updateTime}, su.deleted = #{deleted}, su.tenant_id = #{tenantId}
+        WHERE su.id = #{id}
+    </update>
+
+    <!-- Delete -->
+    <delete id="delete" parameterType="long">
+        UPDATE system_users su SET deleted ='1' WHERE su.id = #{id}
+    </delete>
+    
+    <!-- Kiểm tra sự tồn tại của username -->
+    <select id="countByUsername" parameterType="string" resultType="int">
+        SELECT COUNT(su.id) FROM system_users su WHERE su.username = #{username}
+    </select>
+    
+    <!-- Kiểm tra sự tồn tại của email -->
+    <select id="countByEmail" parameterType="string" resultType="int">
+        SELECT COUNT(su.id) FROM system_users su WHERE su.email = #{email}
+    </select>
+    <select id="findUsersBySearchCriteria" resultMap="systemUserResultMap" parameterType="string">
+        SELECT *
+        FROM system_users
+        WHERE deleted = 0
+          AND (
+            username LIKE CONCAT('%', #{search}, '%')
+            OR nickname LIKE CONCAT('%', #{search}, '%')
+            OR email LIKE CONCAT('%', #{search}, '%')
+            OR mobile LIKE CONCAT('%', #{search}, '%')
+          )
+    </select>
+</mapper>
